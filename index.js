@@ -24,7 +24,10 @@ const html = `
 </html>
 `
 const char64 = [ 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '/' ]
-const charTodec = char64.reduce((m, c, i) => m.set(c, i), new Map())
+const charToBi = char64.reduce((m, c, i) => {
+    const bi = Number(i).toString(2)
+    return m.set(c, `${new Array(6 - bi.length).fill('0').join('')}${bi}`)
+}, new Map())
 const decodeStringBase64toBuffer = (str) => {
     const full = []
     for(let i = 0; i < str.length; i += 4) {
@@ -32,8 +35,7 @@ const decodeStringBase64toBuffer = (str) => {
         let binary = '' // 24 bit
         for(let c of now) {
             if(c === '=') continue
-            const s = Number(charTodec.get(c)).toString(2)
-            binary = `${binary}${new Array(6 - s.length).fill('0').join('')}${s}`
+            binary += charToBi.get(c)
         }
         for(let j = 0; j < 24; j += 8) {
             const o = binary.slice(j, j + 8)

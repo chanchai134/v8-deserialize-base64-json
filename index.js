@@ -6,7 +6,7 @@ const html = `
 <!DOCTYPE html>
 <html>
     <head>
-        <title>base64</title>
+        <title>v8 base64</title>
     </head>
     <body>
         <form action="/json" method="post">

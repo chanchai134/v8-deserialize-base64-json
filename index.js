@@ -28,6 +28,7 @@ const charToBi = char64.reduce((m, c, i) => {
     const bi = Number(i).toString(2)
     return m.set(c, `${new Array(6 - bi.length).fill('0').join('')}${bi}`)
 }, new Map())
+
 const decodeStringBase64toBuffer = (str) => {
     const full = []
     for(let i = 0; i < str.length; i += 4) {

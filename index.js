@@ -23,9 +23,30 @@ const html = `
     </body>
 </html>
 `
+const char64 = [ 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '/' ]
+const charTodec = char64.reduce((m, c, i) => m.set(c, i), new Map())
+const decodeStringBase64toBuffer = (str) => {
+    const full = []
+    for(let i = 0; i < str.length; i += 4) {
+        const now = str.slice(i, i + 4) // 24 bit
+        let binary = '' // 24 bit
+        for(let c of now) {
+            if(c === '=') continue
+            const s = Number(charTodec.get(c)).toString(2)
+            binary = `${binary}${new Array(6 - s.length).fill('0').join('')}${s}`
+        }
+        for(let j = 0; j < 24; j += 8) {
+            const o = binary.slice(j, j + 8)
+            if(o.length === 8) {
+                full.push(parseInt(o, 2))
+            }
+        }
+    }
+    return Buffer.from(full)
+}
 
-const obj = { pom: 'test' };
-console.log(v8.serialize(obj).toString('base64'));
+const obj = { pom: 'test' }
+console.log(v8.serialize(obj).toString('base64'))
 
 app.get('/', (req, res) => {
     res.send(html)
@@ -33,7 +54,7 @@ app.get('/', (req, res) => {
 
 app.post('/json', express.urlencoded({ extended: true }), (req, res) => {
     const base64String = req.body.base64.replace(/\s/g, '')
-    const obj = v8.deserialize(Buffer.from(base64String, 'base64'))
+    const obj = v8.deserialize(decodeStringBase64toBuffer(base64String))
     res.json(obj)
 })
 

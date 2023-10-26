@@ -10,13 +10,15 @@ const html = `
     </head>
     <body>
         <form action="/json" method="post">
-            <input type="text" name="base64" >
+            <input type="text" name="base64" autofocus>
             <br>
             <input type="submit" value="base64">
         </form>
         <script>
             const s = document.querySelector('input')
             s.addEventListener('click', () => { s.value = '' })
+            const o = () => { setTimeout(() => {s.focus(); o();}, 500) }
+            o()
         </script>
     </body>
 </html>

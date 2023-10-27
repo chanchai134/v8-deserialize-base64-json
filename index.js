@@ -10,21 +10,13 @@ const html = `
     </head>
     <body>
         <form action="/json" method="post">
-            <input type="text" id="input" name="base64" autofocus>
+            <input type="text" name="base64" autofocus>
             <br>
-            <input type="radio" name="option" value="Default" checked>
-            <label for="html">Default</label>
-            <input type="radio" id="v8" name="option" value="v8">
-            <label for="html">v8</label>
-            <br>
-            <input type="submit" value="get json">
+            <input type="submit" value="json">
         </form>
         <script>
-            const s = document.querySelector('#input')
+            const s = document.querySelector('input')
             s.addEventListener('click', () => { s.value = '' })
-            if(new URL(document.URL).pathname.slice(-2) === 'v8') {
-                document.querySelector('#v8').checked = true
-            }
             const o = () => { setTimeout(() => {s.focus(); o();}, 500) }
             o()
         </script>
@@ -59,17 +51,16 @@ const decodeStringBase64toBuffer = (str) => {
 const obj = { pom: 'test' }
 console.log(v8.serialize(obj).toString('base64'))
 
-app.get('*', (_, res) => {
+app.get('/', (_, res) => {
     res.send(html)
 })
 
 app.post('/json', express.urlencoded({ extended: true }), (req, res) => {
     const base64String = req.body.base64.replace(/\s/g, '')
-    const option = req.body.option
     let obj
-    if(option === 'v8') {
+    try {
         obj = v8.deserialize(decodeStringBase64toBuffer(base64String)) 
-    } else {
+    } catch {
         obj = JSON.parse(decodeStringBase64toBuffer(base64String))
     }
     res.json(obj)

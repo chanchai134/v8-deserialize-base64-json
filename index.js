@@ -17,7 +17,7 @@ const html = `
             <input type="radio" id="v8" name="option" value="v8">
             <label for="html">v8</label>
             <br>
-            <input type="submit" value="decode">
+            <input type="submit" value="get json">
         </form>
         <script>
             const s = document.querySelector('#input')
